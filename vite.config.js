@@ -10,6 +10,7 @@ const pgSWProxyHtml = `${sandboxDir}playground-service-worker-proxy.html`;
 let outputDir = 'dist';
 
 export default defineConfig({
+  base: '/playground-elements/',
   plugins: [
     {
       name: 'playground-elements-plugin:dev',
@@ -17,7 +18,7 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
           const uri = req.url;
-          let data
+          let data;
 
           if (uri === pgSw) {
             data = [
