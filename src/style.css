@@ -33,6 +33,7 @@
   --playground-code-tag-color: #f07178;
   --playground-code-attribute-color: #b392f0;
   --playground-code-callee-color: #b392f0;
+  --playground-code-selection-background: #3392ff45;
 }
 
 body {
