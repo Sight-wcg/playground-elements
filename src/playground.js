@@ -23,11 +23,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const ide = document.body.querySelector('playground-ide');
   const share = async () => {
     await formatCode();
+    await nextTick();
     const files = Object.entries(ide.config?.files ?? {}).map(([name, file]) => ({
       name,
       content: file.content,
     }));
-
     window.location.hash = serialize(files);
     await navigator.clipboard.writeText(window.location.toString());
   };
@@ -88,7 +88,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-export function setup(ide) {
+export async function setup(ide) {
   ide.config = {
     files: {
       'index.html': {
@@ -98,28 +98,27 @@ export function setup(ide) {
     },
   };
 
-  setTimeout(() => {
-    const togglerEl = document.querySelector('.play-toggler');
-    const ideLeftEl = ide.shadowRoot.querySelector('#lhs');
-    const ideRightEl = ide.shadowRoot.querySelector('#rhs');
-    let showOutput = false;
+  await nextTick();
 
-    ideLeftEl.style.borderRight = 'none';
-    if (document.body.offsetWidth <= 768) {
-      togglerEl.style.display = 'block';
-      document.documentElement.style.setProperty('--playground-preview-width', '100%');
-      const update = function () {
-        ideRightEl.style.display = showOutput ? 'block' : 'none';
-        ideLeftEl.style.display = showOutput ? 'none' : 'block';
-        togglerEl.innerText = showOutput ? '< Code' : 'Output >';
-      };
+  const togglerEl = document.querySelector('.play-toggler');
+  const ideLeftEl = ide.shadowRoot.querySelector('#lhs');
+  const ideRightEl = ide.shadowRoot.querySelector('#rhs');
+  let showOutput = false;
+  ideLeftEl.style.borderRight = 'none';
+  if (document.body.offsetWidth <= 768) {
+    togglerEl.style.display = 'block';
+    document.documentElement.style.setProperty('--playground-preview-width', '100%');
+    const update = function () {
+      ideRightEl.style.display = showOutput ? 'block' : 'none';
+      ideLeftEl.style.display = showOutput ? 'none' : 'block';
+      togglerEl.innerText = showOutput ? '< Code' : 'Output >';
+    };
+    update();
+    togglerEl.addEventListener('click', (e) => {
+      showOutput = !showOutput;
       update();
-      togglerEl.addEventListener('click', (e) => {
-        showOutput = !showOutput;
-        update();
-      });
-    }
-  }, 0);
+    });
+  }
 }
 
 let prettier = undefined;
@@ -184,20 +183,29 @@ function debounce(fn, n = 100) {
   };
 }
 
+function nextTick(callback) {
+  return new Promise((resolve) =>
+    setTimeout(async () => {
+      (await callback) && callback();
+      resolve();
+    }, 0)
+  );
+}
+
 function serialize(code) {
   return '#project=' + utoa(JSON.stringify(code));
 }
 
-const encodeSafeBase64 = (str) => {
+function encodeSafeBase64(str) {
   const percentEscaped = encodeURIComponent(str);
   const utf8 = percentEscaped.replace(/%([0-9A-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
   const base64 = btoa(utf8);
   const base64url = base64.replace(/\+/g, '-').replace(/\//g, '_');
   const padIdx = base64url.indexOf('=');
   return padIdx >= 0 ? base64url.slice(0, padIdx) : base64url;
-};
+}
 
-const decodeSafeBase64 = (base64url) => {
+function decodeSafeBase64(base64url) {
   const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
   const utf8 = atob(base64);
   const percentEscaped = utf8
@@ -207,7 +215,7 @@ const decodeSafeBase64 = (base64url) => {
 
   const str = decodeURIComponent(percentEscaped);
   return str;
-};
+}
 
 function utoa(data) {
   const buffer = strToU8(data);
