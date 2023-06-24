@@ -10,6 +10,7 @@ const pgSWProxyHtml = `${sandboxDir}playground-service-worker-proxy.html`;
 let outputDir = 'dist';
 
 export default defineConfig({
+  base: '/playground-elements/',
   plugins: [
     {
       name: 'playground-elements-plugin:dev',
