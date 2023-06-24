@@ -6,12 +6,12 @@ const code = `
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Demo</title>
-  <link href="//unpkg.com/layui@2.8.7/dist/css/layui.css" rel="stylesheet">
+  <link href="//unpkg.com/layui/dist/css/layui.css" rel="stylesheet">
 </head>
 <body>
   <button class="layui-btn">按钮</button>
 
-  <script src="//unpkg.com/layui@2.8.7/dist/layui.js"></script>
+  <script src="//unpkg.com/layui/dist/layui.js"></script>
   <script>
     console.log(layui.v)
   </script>
@@ -94,9 +94,32 @@ export function setup(ide) {
       'index.html': {
         content: code,
         selected: true,
-      }
+      },
     },
   };
+
+  setTimeout(() => {
+    const togglerEl = document.querySelector('.play-toggler');
+    const ideLeftEl = ide.shadowRoot.querySelector('#lhs');
+    const ideRightEl = ide.shadowRoot.querySelector('#rhs');
+    let showOutput = false;
+
+    ideLeftEl.style.borderRight = 'none';
+    if (document.body.offsetWidth <= 768) {
+      togglerEl.style.display = 'block';
+      document.documentElement.style.setProperty('--playground-preview-width', '100%');
+      const update = function () {
+        ideRightEl.style.display = showOutput ? 'block' : 'none';
+        ideLeftEl.style.display = showOutput ? 'none' : 'block';
+        togglerEl.innerText = showOutput ? '< Code' : 'Output >';
+      };
+      update();
+      togglerEl.addEventListener('click', (e) => {
+        showOutput = !showOutput;
+        update();
+      });
+    }
+  }, 0);
 }
 
 function debounce(fn, n = 100) {
