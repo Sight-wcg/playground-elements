@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  playground-elements@0.18.0:
+    hash: 4u7girbstyxucotzhxsclveayu
+    path: patches/playground-elements@0.18.0.patch
+
 specifiers:
   fflate: ^0.8.0
   playground-elements: ^0.18.0
@@ -7,7 +12,7 @@ specifiers:
 
 dependencies:
   fflate: 0.8.0
-  playground-elements: 0.18.0
+  playground-elements: 0.18.0_4u7girbstyxucotzhxsclveayu
 
 devDependencies:
   vite: 4.3.9
@@ -703,7 +708,7 @@ packages:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
     dev: true
 
-  /playground-elements/0.18.0:
+  /playground-elements/0.18.0_4u7girbstyxucotzhxsclveayu:
     resolution: {integrity: sha512-Pdoq1gs2pEadMhrvHF84vk6WghHEOFe+PmtvSJn4bpatGmi720OJuS1+UBDVS05XxHZ8C4VpD6IdlaNGMksDnA==}
     dependencies:
       '@material/mwc-button': 0.27.0
@@ -719,6 +724,7 @@ packages:
       tslib: 2.5.3
       vscode-languageserver-protocol: 3.17.3
     dev: false
+    patched: true
 
   /postcss/8.4.24:
     resolution: {integrity: sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==}

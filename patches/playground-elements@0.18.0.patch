@@ -1,0 +1,12 @@
+diff --git a/playground-code-editor.js b/playground-code-editor.js
+index ba9753e28610411eb5a587378da2a2bc5a202cb6..e88def32dd0f5825802fae5cd1c84a0caec525de 100644
+--- a/playground-code-editor.js
++++ b/playground-code-editor.js
+@@ -324,6 +324,7 @@ let PlaygroundCodeEditor = class PlaygroundCodeEditor extends LitElement {
+             mode: this._getLanguageMode(),
+             readOnly: this.readonly,
+             inputStyle: 'contenteditable',
++            tabSize: 2,
+             // Don't allow naturally tabbing into the editor, because it's a
+             // tab-trap. Instead, the container is focusable, and Enter/Escape are
+             // used to explicitly enter the editable area.

@@ -14,5 +14,10 @@
   "dependencies": {
     "fflate": "^0.8.0",
     "playground-elements": "^0.18.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "playground-elements@0.18.0": "patches/playground-elements@0.18.0.patch"
+    }
   }
 }
