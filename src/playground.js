@@ -20,14 +20,14 @@ const code = `
 `.trim();
 
 window.addEventListener('DOMContentLoaded', () => {
-  const $ = document.body.querySelector.bind(document.body);
-  const ide = $('playground-ide');
-
+  const ide = document.body.querySelector('playground-ide');
   const share = async () => {
+    await formatCode();
     const files = Object.entries(ide.config?.files ?? {}).map(([name, file]) => ({
       name,
       content: file.content,
     }));
+
     window.location.hash = serialize(files);
     await navigator.clipboard.writeText(window.location.toString());
   };
@@ -120,6 +120,58 @@ export function setup(ide) {
       });
     }
   }, 0);
+}
+
+let prettier = undefined;
+async function loadPrettier() {
+  const load = (path) => import(/* @vite-ignore */ `https://unpkg.com/prettier@2/esm/${path}`);
+  if (!prettier) {
+    prettier = await Promise.all([
+      load('standalone.mjs').then((r) => r.default.format),
+      load('parser-html.mjs').then((m) => m.default),
+      load('parser-typescript.mjs').then((m) => m.default),
+      load('parser-babel.mjs').then((m) => m.default),
+      load('parser-postcss.mjs').then((m) => m.default),
+    ]);
+  }
+
+  return prettier;
+}
+
+// TODO active file
+async function formatCode() {
+  const [format, parserHtml, parserTypeScript, parserBabel, parserPostcss] = await loadPrettier();
+  const ide = document.body.querySelector('playground-ide');
+  let files = Object.entries(ide.config?.files ?? {}).map(([name, file]) => ({
+    name,
+    content: file.content,
+  }));
+
+  files = files.map(({ name, content }, index) => {
+    let parser;
+    if (name.endsWith('.html')) {
+      parser = 'html';
+    } else if (name.endsWith('.css')) {
+      parser = 'postcss';
+    } else if (name.endsWith('.js')) {
+      parser = 'babel';
+    } else if (name.endsWith('.ts')) {
+      parser = 'typescript';
+    } else if (name.endsWith('.json')) {
+      parser = 'json';
+    } else {
+      return;
+    }
+    content = format(content, {
+      parser,
+      plugins: [parserHtml, parserTypeScript, parserBabel, parserPostcss],
+      semi: false,
+      singleQuote: true,
+    });
+    return { name, content };
+  });
+
+  ide.config = { files: Object.fromEntries(files.map(({ name, content }) => [name, { content }])) };
 }
 
 function debounce(fn, n = 100) {
